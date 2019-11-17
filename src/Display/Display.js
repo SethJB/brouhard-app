@@ -2,21 +2,27 @@ import React, { Component } from 'react';
 import './Display.module.css';
 import axios from '../axios';
 import Table from '../Table/Table';
+import Button from '../Button/Button';
 
 
 class Display extends Component {
-    // eslint-disable-next-line no-useless-constructor
-    constructor(props){
-        super(props);
-    }
     state = {
-        headers: [],               
+        title: "",
+        headers: [],  
+        showTable: false,     
+        featureData: [],
+        description: "",
     }
 
     getSampleData = () => {
         axios.get('/Sample.json')
             .then(response => {
-                console.log(response.data);              
+                this.setState({
+                    title: response.data.Title,
+                    featureData: response.data.FeatureData,
+                    description: response.data.Description,
+                    showTable: true, 
+                });            
             })
             .catch(error => {
                 console.log('Error',error);
@@ -27,25 +33,35 @@ class Display extends Component {
              return <th key={index}>{header}</th>
          });
     }
-    getData = () => {
-        this.getSampleData();
-        const a = ['data1','data2']
-        return a.map((data, index) => {
+    mapData = (data) => {
+        return data.map((data, index) => {
             return ( 
-                <tr>
-                    <td>{data}</td>
-                    <td>{index}</td>
+                <tr key={index} >
+                    <td>{data.geometry.type}</td>
+                    <td>{data.geometry.coordinates.join(' , ')}</td>
+                    <td>{data.id}</td>
+                    <td>{data.properties.wikipedia}</td>
+                    <td>{data.properties.city}</td>
+                    <td>{data.type}</td>
                 </tr>
             )
         });
     }
     render(){
-        const headers = ['header1','header2']
+       
+        const headers = ['Geometry Type', 'Coordinates','Id', 'Wikipedia','City','Type']
         return (
             <div className="Display"> 
-            
-            Display
-            <Table title="Data" headers={this.getHeaders(headers)} data={this.getData()}/>
+                <Button clicked={() => this.getSampleData()}>
+                            Retrieve Data
+                    </Button>
+                {this.state.showTable &&
+                    <div className="NewTable">
+                        <h1>{this.state.title}</h1>
+                        <h2>{this.state.description}</h2>
+                        <Table title="Feature Data" headers={this.getHeaders(headers)} data={this.mapData(this.state.featureData)}/>
+                    </div>
+                }
             </div>
         )
     }

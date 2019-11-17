@@ -5,9 +5,13 @@ const table = (props) => {
     return (
         <div>
             <h1>{props.title}</h1>
-            <table>
-                <tr>{props.headers}</tr>
-                {props.data}
+            <table>                
+                <thead>
+                    <tr>{props.headers}</tr>
+                </thead>
+                <tbody>
+                    {props.data}
+                </tbody>
             </table>
         </div>
     );
